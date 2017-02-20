@@ -54,13 +54,17 @@ print("UMSI faculty directory emails\n")
 
 ### Your Problem 4 solution goes here
 url4 = 'https://www.si.umich.edu/directory?field_person_firstname_value=&field_person_lastname_value=&rid=4'
-html4 = urllib.request.urlopen(url4).read()
+req = urllib.request.Request(url4, None, {'User-Agent': 'SI_CLASS'})
+response = urllib.request.urlopen(req)
+html4 = response.read()
 soup4 = BeautifulSoup(html4, 'html.parser')
 count = 1
 while True:
     for a in soup4.find_all('a', text = 'Contact Details'):
         contact_url = urllib.parse.urljoin(url4, a['href'])
-        contact_html = urllib.request.urlopen(contact_url).read()
+        contact_req = urllib.request.Request(contact_url, None, {'User-Agent': 'SI_CLASS'})
+        contact_response = urllib.request.urlopen(contact_req)
+        contact_html = contact_response.read()
         contact_soup = BeautifulSoup(contact_html, 'html.parser')
         for div in contact_soup.find_all('div', class_ = 'field field-name-field-person-email field-type-email field-label-inline clearfix'):
             print(count, div.a.text.replace('\n', ' ').strip())
@@ -68,7 +72,9 @@ while True:
     next_page = soup4.find_all('a', title = "Go to next page")
     if next_page:
         next_url = urllib.parse.urljoin(url4, next_page[0]['href'])
-        next_html = urllib.request.urlopen(next_url).read()
+        next_req = urllib.request.Request(next_url, None, {'User-Agent': 'SI_CLASS'})
+        next_response = urllib.request.urlopen(next_req)
+        next_html = next_response.read()
         soup4 = BeautifulSoup(next_html, "html.parser")
     else:
         break
